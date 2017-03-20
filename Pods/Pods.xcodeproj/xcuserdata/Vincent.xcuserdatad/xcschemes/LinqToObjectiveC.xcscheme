@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'C87F0F67813A00A5FEF5A2917A8AB628'
-               BlueprintName = 'Pods-TwitterInstant'
+               BlueprintIdentifier = '24B4DF2DE452DE602ABD8A3756006DB7'
+               BlueprintName = 'LinqToObjectiveC'
                ReferencedContainer = 'container:Pods.xcodeproj'
-               BuildableName = 'libPods-TwitterInstant.a'>
+               BuildableName = 'libLinqToObjectiveC.a'>
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>

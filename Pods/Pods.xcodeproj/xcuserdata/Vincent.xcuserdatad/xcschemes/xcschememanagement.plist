@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>LinqToObjectiveC.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-TwitterInstant.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -17,12 +22,17 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>5A145D430A41517C432BE279AC0C63E1</key>
+		<key>24B4DF2DE452DE602ABD8A3756006DB7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>EDC0C381B082B5EF3C04A4D06512EA13</key>
+		<key>C1FDF80CAA71C174D4FFF3A5C279F2B3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C87F0F67813A00A5FEF5A2917A8AB628</key>
 		<dict>
 			<key>primary</key>
 			<true/>
