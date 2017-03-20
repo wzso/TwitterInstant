@@ -9,64 +9,19 @@
 #import "DetailViewController.h"
 #import "RWTweet.h"
 #import "RWTweetCell.h"
-#import <ReactiveCocoa/ReactiveCocoa.h>
-#import <ReactiveCocoa/RACEXTScope.h>
-#import <Accounts/Accounts.h> 
-#import <Social/Social.h>
+#import <ReactiveCocoa/ReactiveCocoa/ReactiveCocoa.h>
 
-
-typedef NS_ENUM(NSInteger, RWTwitterInstantError) {
-    RWTwitterInstantErrorAccessDenied,
-    RWTwitterInstantErrorNoTwitterAccounts,
-    RWTwitterInstantErrorInvalidResponse
-};
-
-static NSString * const RWTwitterInstantDomain = @"TwitterInstant";
 
 
 @interface DetailViewController ()
 @property (nonatomic, strong) NSArray *tweets;
-@property (strong, nonatomic) ACAccountStore *accountStore;
-@property (strong, nonatomic) ACAccountType *twitterAccountType;
 @end
 
 @implementation DetailViewController
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.accountStore = [[ACAccountStore alloc] init];
-    self.twitterAccountType = [self.accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
-    
-    [[self requestToAccessTwitterSigal] subscribeNext:^(id x) {
-        NSLog(@"Succeed!");
-    } error:^(NSError *error) {
-        NSLog(@"%@", error.localizedDescription);
-    }];
-}
 
 - (void)displayTweets:(NSArray *)tweets {
     self.tweets = tweets;
     [self.tableView reloadData];
-}
-
-- (RACSignal *)requestToAccessTwitterSigal {
-    @weakify(self)
-    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-        @strongify(self)
-        [self.accountStore
-         requestAccessToAccountsWithType:self.twitterAccountType
-         options:nil
-         completion:^(BOOL granted, NSError *error) {
-           if (granted) {
-               [subscriber sendNext:nil];
-               [subscriber sendCompleted];
-           }
-           else {
-               NSError *accessError = [NSError errorWithDomain:RWTwitterInstantDomain code:RWTwitterInstantErrorAccessDenied userInfo:nil];
-               [subscriber sendError:accessError];
-           }
-        }];
-        return nil;
-    }];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -80,7 +35,24 @@ static NSString * const RWTwitterInstantDomain = @"TwitterInstant";
     RWTweet *tweet = self.tweets[indexPath.row];
     cell.twitterStatusText.text = tweet.status;
     cell.twitterUsernameText.text = [NSString stringWithFormat:@"@%@",tweet.username];
-    
+    cell.twitterAvatarView.image = nil;
+    [[[self signalForLoadingImageWithURL:tweet.profileImageUrl]
+     deliverOn:[RACScheduler mainThreadScheduler]]
+     subscribeNext:^(UIImage *image) {
+        cell.twitterAvatarView.image = image;
+    }];
     return cell;
 }
+
+- (RACSignal *)signalForLoadingImageWithURL:(NSString *)url {
+    RACScheduler *scheduler = [RACScheduler schedulerWithPriority:RACSchedulerPriorityBackground];
+    return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:url]];
+        UIImage *image = [UIImage imageWithData:data];
+        [subscriber sendNext:image];
+        [subscriber sendCompleted];
+        return nil;
+    }] subscribeOn:scheduler];
+}
+
 @end
